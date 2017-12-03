@@ -1,2 +1,4 @@
 GET     /                           controllers.HomeController.index
+GET     /signup                     controllers.SignUpController.index
+POST    /signup/register            controllers.SignUpController.register
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

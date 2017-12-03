@@ -13,6 +13,7 @@ import play.filters.csrf.CSRF._
 import play.filters.csrf._
 import scalikejdbc.PlayModule
 import play.api.inject.bind
+import services.UserService
 
 import scala.reflect.ClassTag
 
@@ -28,6 +29,7 @@ abstract class PlayFunSpec
     new GuiceApplicationBuilder()
       .disable[DBModule]
       .disable[PlayModule]
+      .overrides(bind[UserService].to[MockUserService]) // 追加
       .build()
 
   lazy val injector = fakeApplication.injector
