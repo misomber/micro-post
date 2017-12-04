@@ -4,4 +4,6 @@ GET     /auth                       controllers.AuthController.index
 POST    /auth/login                 controllers.AuthController.login
 POST    /auth/logout                controllers.AuthController.logout
 POST    /signup/register            controllers.SignUpController.register
+GET     /users                      controllers.UsersController.index
+GET     /users/:id                  controllers.UsersController.show(id: Long)
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
