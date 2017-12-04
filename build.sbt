@@ -50,6 +50,8 @@ libraryDependencies ++= Seq(
   "com.adrianhurt"         %% "play-bootstrap"               % "1.1-P25-B3",
   "mysql"                  % "mysql-connector-java"          % "6.0.6",
   "com.github.t3hnar" %% "scala-bcrypt" % "3.0",
+  "jp.t2v"                 %% "play2-auth"                   % "0.14.2",
+  "jp.t2v"                 %% "play2-auth-test"              % "0.14.2" % Test,
   "org.flywaydb"           %% "flyway-play"                  % "3.1.0"
 )
 
