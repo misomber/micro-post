@@ -4,7 +4,7 @@ import javax.inject.Singleton
 
 import jp.t2v.lab.play2.pager.scalikejdbc._
 import jp.t2v.lab.play2.pager.{ Pager, SearchResult }
-import models.MicroPost
+import models.{ MicroPost, UserFollow }
 import scalikejdbc._
 
 import scala.util.Try
@@ -24,7 +24,7 @@ class MicroPostServiceImpl extends MicroPostService {
       implicit dbSession: DBSession
   ): Try[SearchResult[MicroPost]] =
     countBy(userId).map { size =>
-      SearchResult(pager, size)(findAllByWithLimitOffset(userId))
+      SearchResult(pager, size)(findAllByWithLimitOffset(Seq(userId)))
     }
 
   override def countBy(userId: Long)(implicit dbSession: DBSession): Try[Long] = Try {
@@ -34,14 +34,16 @@ class MicroPostServiceImpl extends MicroPostService {
   override def findAllByWithLimitOffset(pager: Pager[MicroPost], userId: Long)(
       implicit dbSession: DBSession
   ): Try[SearchResult[MicroPost]] = Try {
-    val size = MicroPost.countBy(sqls.eq(MicroPost.defaultAlias.userId, userId))
-    SearchResult(pager, size)(findAllByWithLimitOffset(userId))
+    val followingIds =
+      UserFollow.findAllBy(sqls.eq(UserFollow.defaultAlias.userId, userId)).map(_.followId)
+    val size = MicroPost.countBy(sqls.in(MicroPost.defaultAlias.userId, userId +: followingIds))
+    SearchResult(pager, size)(findAllByWithLimitOffset(userId +: followingIds))
   }
 
-  private def findAllByWithLimitOffset(userId: Long)(pager: Pager[MicroPost])(
+  private def findAllByWithLimitOffset(userIds: Seq[Long])(pager: Pager[MicroPost])(
       implicit dbSession: DBSession
   ): Seq[MicroPost] = MicroPost.findAllByWithLimitOffset(
-    sqls.eq(MicroPost.defaultAlias.userId, userId),
+    sqls.in(MicroPost.defaultAlias.userId, userIds),
     pager.limit,
     pager.offset,
     pager.allSorters.map(_.toSQLSyntax(MicroPost.defaultAlias))
