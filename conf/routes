@@ -5,7 +5,11 @@ POST    /auth/login                 controllers.AuthController.login
 POST    /auth/logout                controllers.AuthController.logout
 POST    /signup/register            controllers.SignUpController.register
 GET     /users                      controllers.UsersController.index(pager: Pager[User])
-GET     /users/:id                  controllers.UsersController.show(id: Long)
+GET         /users/:id                       controllers.UsersController.show(id: Long, page: Int)
+GET         /users/:userId/followers         controllers.UsersController.getFollowers(userId: Long, page: Int)
+GET         /users/:userId/followings        controllers.UsersController.getFollowings(userId: Long, page: Int)
+POST        /users/:userId/follow            controllers.UserFollowController.follow(userId: Long)
+POST        /users/:userId/unfollow          controllers.UserFollowController.unFollow(userId: Long)
 POST        /posts                   controllers.PostController.post(pager: Pager[MicroPost])
 POST        /posts/:id/delete        controllers.PostController.delete(id: Long, pager: Pager[MicroPost])
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

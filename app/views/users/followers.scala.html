@@ -1,4 +1,4 @@
-@(currentUser: User, user: User, userFollows: List[UserFollow], microPosts: SearchResult[MicroPost], followingsCount: Long, followersCount: Long)(implicit messages: Messages, flash: Flash, request: RequestHeader)
+@(currentUser: User, user: User, userFollows: List[UserFollow], followers: SearchResult[User], microPostsCount: Long, followingsCount: Long)(implicit messages: Messages, flash: Flash, request: RequestHeader)
 
 @main(Messages("User"), Some(currentUser)) {
 <div class="row">
@@ -9,16 +9,13 @@
             </div>
             <div class="panel-body">
                 <img class="media-object img-rounded img-responsive" src="@common.gravatarUrl(user.email)?s=500&amp;r=g&amp;d=identicon" alt="">
-                @* 追加する *@
                 @user_follow.follow_button(currentUser, user, userFollows)
             </div>
         </div>
     </aside>
     <div class="col-xs-8">
-        @views.html.users.tab(user, microPosts.totalCount, followingsCount, followersCount)
-        @if(microPosts.items.nonEmpty){
-        @common.posts(currentUser, microPosts)
-        }
+        @views.html.users.tab(user, microPostsCount, followingsCount, followers.totalCount)
+        @views.html.users.users(currentUser, followers)
     </div>
 </div>
 
