@@ -1,9 +1,11 @@
-GET     /                           controllers.HomeController.index
+GET     /                           controllers.HomeController.index(pager: Pager[MicroPost])
 GET     /signup                     controllers.SignUpController.index
 GET     /auth                       controllers.AuthController.index
 POST    /auth/login                 controllers.AuthController.login
 POST    /auth/logout                controllers.AuthController.logout
 POST    /signup/register            controllers.SignUpController.register
-GET     /users                      controllers.UsersController.index
+GET     /users                      controllers.UsersController.index(pager: Pager[User])
 GET     /users/:id                  controllers.UsersController.show(id: Long)
+POST        /posts                   controllers.PostController.post(pager: Pager[MicroPost])
+POST        /posts/:id/delete        controllers.PostController.delete(id: Long, pager: Pager[MicroPost])
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

@@ -1,19 +1,32 @@
-@(currentUser: User, users: Seq[User])(implicit messages: Messages, flash: Flash, request: RequestHeader)
+@* SearchResultを受け取るように変更 *@
+@(currentUser: User, users: SearchResult[User])(implicit messages: Messages, flash: Flash, request: RequestHeader)
 
-    <ul class="media-list">
-        @for(otherUser <- users) {
-        <li class="media">
-            <div class="media-left">
-                <img class="media-object img-rounded" src="@common.gravatarUrl(otherUser.email)?s=50&amp;r=g&amp;d=identicon" alt="">
+<ul class="media-list">
+    @* SearchResult#itemsを参照する *@
+    @for(otherUser <- users.items) {
+    <li class="media">
+        <div class="media-left">
+            <img class="media-object img-rounded" src="@common.gravatarUrl(otherUser.email)?s=50&amp;r=g&amp;d=identicon" alt="">
+        </div>
+        <div class="media-body">
+            <div>
+                @otherUser.name
             </div>
-            <div class="media-body">
-                <div>
-                    @otherUser.name
-                </div>
-                <div>
-                    <p><a href="@routes.UsersController.show(otherUser.id.get)">@Messages("ViewProfile")</a></p>
-                </div>
+            <div>
+                <p><a href="@routes.UsersController.show(otherUser.id.get)">@Messages("ViewProfile")</a></p>
             </div>
-        </li>
-        }
-    </ul>
+        </div>
+    </li>
+    }
+</ul>
+@* 追加 *@
+@pagination(
+    users,
+    routes.UsersController.index,
+    window = 3,
+    firstLabel = Html("First"),
+    previousLabel = Html("Prev"),
+    truncateLabel = Html("..snip.."),
+    nextLabel = Html("Next"),
+    lastLabel = Html("Last")
+)

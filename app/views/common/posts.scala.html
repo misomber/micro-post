@@ -1,0 +1,44 @@
+@import b3.vertical.fieldConstructor
+
+@(currentUser: User, microPosts: SearchResult[MicroPost])(implicit messages: Messages, request: RequestHeader)
+
+<ul class="media-list">
+
+    @for(micropost <- microPosts.items) {
+    <li class="media">
+        <div class="media-left">
+            <img class="media-object img-rounded" src="@common.gravatarUrl(micropost.user.get.email)?s=50&amp;r=g&amp;d=identicon" alt="">
+        </div>
+        <div class="media-body">
+            <div>
+                <a href="@routes.UsersController.show(micropost.userId)">
+                    @micropost.user.map(_.name).get</a>
+                <span class="text-muted">posted at @micropost.createAt</span>
+            </div>
+            <div>
+                <p>@micropost.content</p>
+            </div>
+            @* 削除用フォーム *@
+            @if(currentUser.id.get == micropost.userId) {
+            <div>
+                @b3.formCSRF(routes.PostController.delete(micropost.id.get, Pager.default)) {
+                @b3.submit('class -> "btn btn-danger btn-xs") {
+                @Messages("Delete")
+                }
+                }
+            </div>
+            }
+        </div>
+    </li>
+    }
+</ul>
+@pagination(
+microPosts,
+routes.HomeController.index,
+window = 3,
+firstLabel = Html("First"),
+previousLabel = Html("Prev"),
+truncateLabel = Html("..snip.."),
+nextLabel = Html("Next"),
+lastLabel = Html("Last")
+)

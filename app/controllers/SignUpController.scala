@@ -5,6 +5,7 @@ import javax.inject.{ Inject, Singleton }
 
 import com.github.t3hnar.bcrypt._
 import forms.SignUp
+import jp.t2v.lab.play2.pager.Pager
 import models.User
 import play.api.data.Form
 import play.api.data.Forms._
@@ -50,9 +51,6 @@ class SignUpController @Inject()(
 
   def register: Action[AnyContent] = Action { implicit request =>
     signUpForm
-    // Requestオブジェクトからフォームに割り当てるためのメソッド
-    // フォームのバリデーションや値の取り出しできます。フォームの成功ケースでは、
-    // フォーム(SingUp)の内容をUserモデルに変換し、UserService#createを使って登録します。
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(views.html.signup(formWithErrors)), { signUp =>
@@ -62,13 +60,13 @@ class SignUpController @Inject()(
           userService
             .create(user)
             .map { _ =>
-              Redirect(routes.HomeController.index())
+              Redirect(routes.HomeController.index(Pager.default))
                 .flashing("success" -> Messages("SignUpSucceeded"))
             }
             .recover {
               case e: Exception =>
                 Logger.error(s"occurred error", e)
-                Redirect(routes.HomeController.index())
+                Redirect(routes.HomeController.index(Pager.default))
                   .flashing("failure" -> Messages("InternalError"))
             }
             .getOrElse(InternalServerError(Messages("InternalError")))

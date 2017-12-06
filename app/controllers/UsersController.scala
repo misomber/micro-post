@@ -3,6 +3,7 @@ package controllers
 import javax.inject._
 
 import jp.t2v.lab.play2.auth.AuthenticationElement
+import jp.t2v.lab.play2.pager.Pager
 import play.api.Logger
 import play.api.i18n.{ I18nSupport, Messages, MessagesApi }
 import play.api.mvc._
@@ -15,18 +16,20 @@ class UsersController @Inject()(val userService: UserService, val messagesApi: M
     with AuthConfigSupport
     with AuthenticationElement {
 
-  def index: Action[AnyContent] = StackAction { implicit request =>
-    userService.findAll
+  // 変更: 引数を変更
+  def index(pager: Pager[models.User]): Action[AnyContent] = StackAction { implicit request =>
+    userService
+      .findAll(pager) // pagerを渡す
       .map { users =>
-        Ok(views.html.users.index(loggedIn, users))
+        Ok(views.html.users.index(loggedIn, users)) // SearchResultをビューに渡す
       }
       .recover {
         case e: Exception =>
           Logger.error(s"occurred error", e)
-          Redirect(routes.UsersController.index())
+          Redirect(routes.UsersController.index(Pager.default))
             .flashing("failure" -> Messages("InternalError"))
       }
-      .getOrElse(InternalServerError(Messages("InternaError")))
+      .getOrElse(InternalServerError(Messages("InternalError")))
   }
 
   def show(userId: Long) = StackAction { implicit request =>
@@ -40,7 +43,7 @@ class UsersController @Inject()(val userService: UserService, val messagesApi: M
       .recover {
         case e: Exception =>
           Logger.error(s"occurred error", e)
-          Redirect(routes.UsersController.index())
+          Redirect(routes.UsersController.index(Pager.default))
             .flashing("failure" -> Messages("InternalError"))
       }
       .getOrElse(InternalServerError(Messages("InternalError")))
